@@ -1,23 +1,18 @@
 import numpy as np
 import pandas as pd
 
-# Carregar les dades
 df = pd.read_csv('ia_P3_PrediccioResultats\portuguese_hs_students.csv')
 
-# Codificar variables categòriques
 df_encoded = pd.get_dummies(df, drop_first=True)
 
-# Definir variables independents i dependents
 X = df_encoded.drop('G3', axis=1).values
-y = (df_encoded['G3'].values >= 10).astype(int)  # 1 si aprova, 0 si suspèn
+y = (df_encoded['G3'].values >= 10).astype(int)
 
-# Dividir en conjunt d'entrenament i test (80% train, 20% test)
 n = len(X)
 split = int(n * 0.8)
 X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
 
-# Implementació simple d'un arbre de decisió de classificació (profunditat 1: stump)
 best_feature = None
 best_threshold = None
 best_gini = float('inf')
@@ -33,7 +28,7 @@ for feature in range(X_train.shape[1]):
             continue
         left_class = int(np.mean(y_train[left_mask]) >= 0.5)
         right_class = int(np.mean(y_train[right_mask]) >= 0.5)
-        # Gini impurity
+        
         left_gini = 1 - np.sum([(np.mean(y_train[left_mask] == c))**2 for c in [0,1]])
         right_gini = 1 - np.sum([(np.mean(y_train[right_mask] == c))**2 for c in [0,1]])
         gini = (np.sum(left_mask) * left_gini + np.sum(right_mask) * right_gini) / len(y_train)
@@ -44,9 +39,6 @@ for feature in range(X_train.shape[1]):
             best_left_class = left_class
             best_right_class = right_class
 
-
-
-# Prediccions sobre el test set
 y_pred = []
 for row in X_test:
     if row[best_feature] <= best_threshold:
@@ -55,7 +47,6 @@ for row in X_test:
         y_pred.append(best_right_class)
 y_pred = np.array(y_pred)
 
-# Avalua el model
 accuracy = np.mean(y_test == y_pred)
 tp = np.sum((y_test == 1) & (y_pred == 1))
 tn = np.sum((y_test == 0) & (y_pred == 0))

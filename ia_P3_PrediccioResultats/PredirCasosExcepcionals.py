@@ -1,21 +1,17 @@
 import numpy as np
 import pandas as pd
 
-# Cargar datos
 df = pd.read_csv('ia_P3_PrediccioResultats/portuguese_hs_students.csv')
 df_encoded = pd.get_dummies(df, drop_first=True)
 
-# Definimos "excepcional" como G3 >= 18 (puedes ajustar el umbral)
 X = df_encoded.drop('G3', axis=1).values
 y = (df_encoded['G3'].values >= 18).astype(int)
 
-# División train/test
 n = len(X)
 split = int(n * 0.8)
 X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
 
-# KNN manual (k=3)
 def euclidean(a, b):
     return np.sqrt(np.sum((a - b) ** 2))
 

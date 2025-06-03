@@ -1,23 +1,17 @@
 import numpy as np
 import pandas as pd
 
-# Carregar les dades (comprova la ruta del fitxer)
 df = pd.read_csv('ia_P3_PrediccioResultats\portuguese_hs_students.csv')
 
-# Codificar variables categòriques
 df_encoded = pd.get_dummies(df, drop_first=True)
 
-# Definir variables independents i dependents
 X = df_encoded.drop('absences', axis=1).values
 y = df_encoded['absences'].values
 
-# Dividir en conjunt d'entrenament i test (80% train, 20% test)
 n = len(X)
 split = int(n * 0.8)
 X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
-
-# Implementació simple d'un arbre de decisió de regressió (profunditat 1: stump)
 
 best_feature = None
 best_threshold = None
@@ -44,7 +38,6 @@ for feature in range(X_train.shape[1]):
             best_left_value = left_mean
             best_right_value = right_mean
 
-# Prediccions sobre el test set
 y_pred = []
 for row in X_test:
     if row[best_feature] <= best_threshold:
@@ -53,7 +46,6 @@ for row in X_test:
         y_pred.append(best_right_value)
 y_pred = np.array(y_pred)
 
-# Avalua el model
 mse = np.mean((y_test - y_pred) ** 2)
 rmse = mse ** 0.5
 ss_tot = np.sum((y_test - np.mean(y_test)) ** 2)
